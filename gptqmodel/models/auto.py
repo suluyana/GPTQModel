@@ -33,8 +33,12 @@ from os.path import isdir, join  # noqa: E402
 from typing import Dict, List, Optional, Union  # noqa: E402
 
 import torch  # noqa: E402
-from huggingface_hub import list_repo_files  # noqa: E402
-from transformers import AutoConfig  # noqa: E402
+if os.getenv("GPTQMODEL_USE_MODELSCOPE"):
+    from modelscope import AutoConfig
+    from modelscope import HubApi
+else:
+    from huggingface_hub import list_repo_files  # noqa: E402
+    from transformers import AutoConfig  # noqa: E402
 
 from ..quantization import QUANT_CONFIG_FILENAME  # noqa: E402
 from ..utils import BACKEND  # noqa: E402
@@ -187,7 +191,11 @@ class GPTQModel:
                         break
 
                 else:  # Remote
-                    files = list_repo_files(repo_id=model_id_or_path)
+                    if os.getenv("GPTQMODEL_USE_MODELSCOPE"):
+                        api = HubApi()
+                        files = api.get_model_files(model_id=model_id_or_path)
+                    else:
+                        files = list_repo_files(repo_id=model_id_or_path)
                     for f in files:
                         if f == name:
                             is_quantized = True

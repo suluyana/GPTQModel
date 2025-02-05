@@ -34,7 +34,11 @@ import torch.nn as nn
 import transformers
 from huggingface_hub import HfApi, hf_hub_download
 from packaging import version
-from transformers import AutoConfig, PretrainedConfig
+if os.getenv("GPTQMODEL_USE_MODELSCOPE"):
+    from modelscope import AutoConfig
+else:
+    from transformers import AutoConfig
+from transformers import PretrainedConfig
 from transformers.pytorch_utils import id_tensor_storage
 from transformers.utils.hub import cached_file
 

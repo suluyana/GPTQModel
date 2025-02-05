@@ -22,9 +22,14 @@ from typing import Dict, List, Optional, Union
 
 import torch
 import transformers
-from huggingface_hub import snapshot_download
+if os.getenv("GPTQMODEL_USE_MODELSCOPE"):
+    from modelscope import snapshot_download
+    from modelscope import AutoConfig, AutoTokenizer
+else:
+    from huggingface_hub import snapshot_download
+    from transformers import AutoConfig, AutoTokenizer
 from packaging.version import InvalidVersion, Version
-from transformers import AutoConfig, AutoTokenizer, PretrainedConfig
+from transformers import PretrainedConfig
 from transformers.modeling_utils import no_init_weights
 from transformers.utils import is_flash_attn_2_available
 from transformers.utils.generic import ContextManagers
